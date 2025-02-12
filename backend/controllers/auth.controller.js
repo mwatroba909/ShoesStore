@@ -85,7 +85,6 @@ export const login = async (req, res) => {
     } catch (error) {
         res.status(500).json({message: error.message});
     }
-    // res.send('Proba zalogowania wywołana');
 }
 
 export const logout = async (req, res) => {
@@ -130,6 +129,14 @@ export const refresh_token = async (req, res) => {
 
         res.json({message: 'Token odświeżenia odnowiony'});
 
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+}
+
+export const getProfile = async (req, res) => {
+    try {
+        res.json(req.user);
     } catch (error) {
         res.status(500).json({message: error.message});
     }
