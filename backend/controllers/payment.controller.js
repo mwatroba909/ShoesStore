@@ -7,7 +7,7 @@ export const createPayment = async (req, res) => {
 		const { products, couponCode } = req.body;
 
 		if (!Array.isArray(products) || products.length === 0) {
-			return res.status(400).json({ error: "Invalid or empty products array" });
+			return res.status(400).json({ error: "Pusta lista" });
 		}
 
 		let totalAmount = 0;
@@ -107,7 +107,7 @@ export const checkoutSucces = async (req, res) => {
 
 			res.status(200).json({
 				success: true,
-				message: "Payment successful, order created, and coupon deactivated if used.",
+				message: "Płatnosc zakonczona powodzeniem.",
 				orderId: newOrder._id,
 			});
 		}
