@@ -33,29 +33,29 @@ export const getRecommendationProducts = async (req, res) => {
 } 
 
 export const createProduct = async (req, res) => {
-    try {
-        const {name, description, price, image} = req.body;
+	try {
+		const { name, description, price, image, category } = req.body;
 
-        let cloudinaryResposne = null
+		let cloudinaryResponse = null;
 
-        if(image) {
-            cloudinaryResposne = await cloudinary.uploader.upload(image,{folder: "products"})
-        }
+		if (image) {
+			cloudinaryResponse = await cloudinary.uploader.upload(image, { folder: "products" });
+		}
 
-        const product = await Product.create({
-            name,
-            description,
-            price,
-            image: cloudinaryResposne.secure_url ? cloudinaryResposne.secure_url : '',
-            category,
-        });
+		const product = await Product.create({
+			name,
+			description,
+			price,
+			image: cloudinaryResponse?.secure_url ? cloudinaryResponse.secure_url : "",
+			category,
+		});
 
-        
-        res.status(201).json({product, message: 'Produkt dodany'});
-    } catch {
-        res.status(500).json({message: 'Server error'});
-    }
-}
+		res.status(201).json(product);
+	} catch (error) {
+		console.log("blad produkt controler", error.message);
+		res.status(500).json({ message: "Server error sprawdznie", error: error.message });
+	}
+};
 
 export const deleteProduct = async (req, res) => {
     try {
