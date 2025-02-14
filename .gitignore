@@ -1,33 +1,34 @@
-# Ignorowanie plików systemowych i edytorów
-.DS_Store
-Thumbs.db
+# # Ignorowanie plików systemowych i edytorów
+# .DS_Store
+# Thumbs.db
 
-# Ignorowanie logów i plików tymczasowych
-*.log
-*.tmp
-*.swp
+# # Ignorowanie logów i plików tymczasowych
+# *.log
+# *.tmp
+# *.swp
 
-# Ignorowanie katalogu build, node_modules i zależności
-node_modules/
-dist/
-build/
-vendor/
+# # Ignorowanie katalogu build, node_modules i zależności
+# node_modules/
+# dist/
+# build/
+# vendor/
 
-# Ignorowanie plików środowiskowych i konfiguracji lokalnych
-.env
-.env.local
-*.config.json
-.idea/
-.vscode/
+# # Ignorowanie plików środowiskowych i konfiguracji lokalnych
+# .env
+# .env.local
+# *.config.json
+# .idea/
+# .vscode/
 
-# Ignorowanie plików binarnych i kompilowanych
-*.exe
-*.dll
-*.o
-*.so
-*.pyc
-*.class
+# # Ignorowanie plików binarnych i kompilowanych
+# *.exe
+# *.dll
+# *.o
+# *.so
+# *.pyc
+# *.class
 
-# Ignorowanie repozytoriów zależności
-package-lock.json
-yarn.lock
+# # Ignorowanie repozytoriów zależności
+# package-lock.json
+# yarn.lock
+node_modules
