@@ -103,7 +103,7 @@ export const changeRemomendationProduct = async (req, res) => {
             const updatedProduct = await product.save();
             await updatedRecommendationProductscashe();
 
-            resj.json(updatedProduct)
+            res.json(updatedProduct)
         } else (
             res.status(404).json({message: 'Produkt nie znaleziony'})
         )
