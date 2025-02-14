@@ -5,6 +5,6 @@ import { protectRoute } from '../middleware/auth.middleware.js';
 const router = express.Router();
 
 router.post('/create_payment', protectRoute, createPayment)
-router.get('/checkout_succes', protectRoute, checkoutSucces)
+router.post('/checkout_succes', protectRoute, checkoutSucces)
 
 export default router;

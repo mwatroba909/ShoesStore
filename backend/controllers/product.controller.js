@@ -52,7 +52,7 @@ export const createProduct = async (req, res) => {
 
 		res.status(201).json(product);
 	} catch (error) {
-		console.log("blad produkt controler", error.message);
+		console.log("blad produkt", error.message);
 		res.status(500).json({ message: "Server error sprawdznie", error: error.message });
 	}
 };

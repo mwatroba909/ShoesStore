@@ -20,14 +20,12 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRoutes)
 app.use("/api/products", productRoutes)
-app.use("api/cart", cartRoutes)
+app.use("/api/cart", cartRoutes)
 app.use("/api/coupons", couponRoutes)
-app.use("/api/payment", paymentRoutes)
+app.use("/api/payments", paymentRoutes)
 
 app.listen(5000, () => {
     console.log('Połacznie z serwerem: http://localhost:' + PORT);  
 
     connectDataBase();
 });
-
-//4eUzWN5LDKK6EtsJ

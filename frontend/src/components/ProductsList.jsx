@@ -3,7 +3,7 @@ import { Trash, Star } from "lucide-react";
 import { useProduct} from "../stores/useProduct";
 
 const ProductsList = () => {
-	const { deleteProduct, toggleFeaturedProduct, products } = useProduct();
+	const { deleteProduct, toggleRecomendedProduct, products } = useProduct();
 
 	console.log("products", products);
 
@@ -76,7 +76,7 @@ const ProductsList = () => {
 							</td>
 							<td className='px-6 py-4 whitespace-nowrap'>
 								<button
-									onClick={() => toggleFeaturedProduct(product._id)}
+									onClick={() => toggleRecomendedProduct(product._id)}
 									className={`p-1 rounded-full ${
 										product.isRecommended ? "bg-yellow-400 text-gray-900" : "bg-gray-600 text-gray-300"
 									} hover:bg-yellow-500 transition-colors duration-200`}

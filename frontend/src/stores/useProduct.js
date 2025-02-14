@@ -58,7 +58,7 @@ export const useProduct = create((set) => ({
 		}
 	},
 	
-    toggleFeaturedProduct: async (productId) => {
+	toggleRecomendedProduct: async (productId) => {
 		set({ loading: true });
 		try {
 			const response = await axios.patch(`/products/${productId}`);
@@ -73,5 +73,4 @@ export const useProduct = create((set) => ({
 			toast.error(error.response.data.error || "Failed to update product");
 		}
 	},
-	
 }));
