@@ -1,4 +1,4 @@
-import { PlusCircle, ShoppingBasket } from "lucide-react";
+import { PlusCircle, ShoppingBasket, MessageSquare } from "lucide-react";
 import { useEffect ,useState } from "react";
 import { motion } from "framer-motion";
 
@@ -6,10 +6,12 @@ import { motion } from "framer-motion";
 import CreateProductForm from "../components/CreateProductForm.jsx";
 import ProductsList from "../components/ProductsList.jsx";
 import { useProduct } from "../stores/useProduct.js";
+import ChatAdmin from "../components/ChatAdmin.jsx";
 
 const tabs = [
     { id: "create", label: "Stwórz produkt", icon: PlusCircle },
     { id: "products", label: "Produkty", icon: ShoppingBasket },
+    { id: "czat", label: "Czat", icon: MessageSquare },
 ];
 
 const AdminPage = () => {
@@ -17,8 +19,8 @@ const AdminPage = () => {
     const { fetchAllProducts } = useProduct();
 
     useEffect(() => {
-		fetchAllProducts();
-	}, [fetchAllProducts]);
+        fetchAllProducts();
+    }, [fetchAllProducts]);
 
     return (
         <div className='min-h-screen relative overflow-hidden'>
@@ -50,6 +52,7 @@ const AdminPage = () => {
                 </div>
                 {activeTab === "create" && <CreateProductForm />}
                 {activeTab === "products" && <ProductsList />}
+                {activeTab === "czat" && <ChatAdmin />}
             </div>
         </div>
     );
