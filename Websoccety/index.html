@@ -1,0 +1,192 @@
+ety/index.html -->
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Gallery with Live Likes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .photo-container {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .photo {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            display: block;
+        }
+        .photo-info {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .like-button {
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 8px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .like-button:hover {
+            background-color: #efefef;
+        }
+        .like-count {
+            font-weight: bold;
+        }
+        .connection-status {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        .connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div id="connectionStatus" class="connection-status disconnected">Disconnected</div>
+    <h1>Photo Gallery with Live Likes</h1>
+    
+    <div class="gallery" id="photoGallery">
+        <!-- Photos will be populated dynamically -->
+    </div>
+
+    <script>
+        // Photo data - typically this would come from a server
+        const photos = [
+            { id: 1, url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff", title: "Red Sneakers", likes: 15 },
+            { id: 2, url: "https://images.unsplash.com/photo-1549298916-b41d501d3772", title: "White Sneakers", likes: 23 },
+            { id: 3, url: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77", title: "Classic Vans", likes: 9 },
+            { id: 4, url: "https://images.unsplash.com/photo-1560769629-975ec94e6a86", title: "Running Shoes", likes: 32 },
+            { id: 5, url: "https://images.unsplash.com/photo-1600269452121-4f2416e55c28", title: "Basketball Shoes", likes: 19 },
+            { id: 6, url: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a", title: "Hiking Boots", likes: 27 }
+        ];
+
+        // WebSocket connection
+        let socket;
+        let isConnected = false;
+        const statusIndicator = document.getElementById('connectionStatus');
+        
+        function connectWebSocket() {
+            // Change this URL to your WebSocket server address
+            socket = new WebSocket('ws://localhost:8080');
+            
+            socket.onopen = function() {
+                isConnected = true;
+                statusIndicator.textContent = 'Connected';
+                statusIndicator.classList.remove('disconnected');
+                statusIndicator.classList.add('connected');
+                console.log('Connected to WebSocket server');
+            };
+            
+            socket.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                if (data.type === 'like') {
+                    updateLikeCount(data.photoId, data.likes);
+                }
+            };
+            
+            socket.onclose = function() {
+                isConnected = false;
+                statusIndicator.textContent = 'Disconnected';
+                statusIndicator.classList.remove('connected');
+                statusIndicator.classList.add('disconnected');
+                console.log('Disconnected from WebSocket server');
+                // Try to reconnect after 5 seconds
+                setTimeout(connectWebSocket, 5000);
+            };
+            
+            socket.onerror = function(error) {
+                console.error('WebSocket error:', error);
+            };
+        }
+        
+        // Function to handle likes
+        function likePhoto(photoId) {
+            if (!isConnected) {
+                alert('Not connected to server. Your like cannot be processed.');
+                return;
+            }
+            
+            // Send like action to server
+            socket.send(JSON.stringify({
+                type: 'like',
+                photoId: photoId
+            }));
+        }
+        
+        // Update the like count in the UI
+        function updateLikeCount(photoId, newCount) {
+            const likeCountElement = document.querySelector(`#like-count-${photoId}`);
+            if (likeCountElement) {
+                likeCountElement.textContent = newCount;
+                
+                // Add a brief animation effect
+                likeCountElement.style.transform = 'scale(1.5)';
+                setTimeout(() => {
+                    likeCountElement.style.transform = 'scale(1)';
+                }, 300);
+            }
+        }
+        
+        // Render photos
+        function renderPhotos() {
+            const gallery = document.getElementById('photoGallery');
+            
+            photos.forEach(photo => {
+                const photoDiv = document.createElement('div');
+                photoDiv.className = 'photo-container';
+                
+                photoDiv.innerHTML = `
+                    <img src="${photo.url}" alt="${photo.title}" class="photo">
+                    <div class="photo-info">
+                        <h3>${photo.title}</h3>
+                        <button class="like-button" onclick="likePhoto(${photo.id})">
+                            ❤️ <span id="like-count-${photo.id}" class="like-count">${photo.likes}</span>
+                        </button>
+                    </div>
+                `;
+                
+                gallery.appendChild(photoDiv);
+            });
+        }
+        
+        // Initialize the page
+        window.addEventListener('DOMContentLoaded', () => {
+            renderPhotos();
+            connectWebSocket();
+        });
+    </script>
+</body>
+</html>

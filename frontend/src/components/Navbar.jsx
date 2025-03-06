@@ -1,5 +1,5 @@
 import React from 'react'
-import { ShoppingCart, UserPlus, LogIn, LogOut, Lock } from 'lucide-react'
+import { ShoppingCart, UserPlus, LogIn, LogOut, Lock, Star } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useUser } from '../stores/useUser';
 import { useCart } from '../stores/useCart';
@@ -13,9 +13,15 @@ const Navbar = () => {
         <header className='fixed top-0 left-0 w-full bg-purple-950/90 backdrop-blur-md shadow-lg z-40 transition-all duration-300 border-b border-purple-800'>
             <div className='container mx-auto px-4 py-3'>
                 <div className='flex flex-wrap justify-between items-center'>
-                    <Link to='/' className='text-2xl font-bold text-purple-400 items-center space-x-2 flex'>
-                        ShoesShop
-                    </Link>
+                    <div className='flex items-center gap-4'>
+                        <Link to='/' className='text-2xl font-bold text-purple-400 items-center space-x-2 flex'>
+                            ShoesShop
+                        </Link>
+                        <Link to='http://localhost:8000/' className='text-gray-300 hover:text-purple-400 transition duration-300 ease-in-out flex items-center'>
+                            <Star className='inline-block mr-1' size={18} />
+                            <span>Oceny</span>
+                        </Link>
+                    </div>
 
                     <nav className='flex flex-wrap items-center gap-4'>
                         {user && (
