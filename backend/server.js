@@ -1,6 +1,8 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
+import fs from 'fs';
+import https from 'https';
 
 import authRoutes from './routes/auth.route.js';
 import productRoutes from './routes/product.route.js';
@@ -15,6 +17,11 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const sslOptions = {
+    key: fs.readFileSync('./backend/certs/klucz.key'),
+    cert: fs.readFileSync('./backend/certs/cert.crt')
+};
+
 app.use(express.json({ limit: '10mb' }));
 app.use(cookieParser());
 
@@ -24,8 +31,7 @@ app.use("/api/cart", cartRoutes)
 app.use("/api/coupons", couponRoutes)
 app.use("/api/payments", paymentRoutes)
 
-app.listen(5000, () => {
-    console.log('Połacznie z serwerem: http://localhost:' + PORT);  
-
+https.createServer(sslOptions, app).listen(PORT, () => {
+    console.log(`Połączenie z serwerem HTTPS: https://localhost:${PORT}`);
     connectDataBase();
 });

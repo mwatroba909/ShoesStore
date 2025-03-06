@@ -29,6 +29,8 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "framer-motion": "^12.4.2",
+    "fs": "^0.0.1-security",
+    "https": "^1.0.0",
     "ioredis": "^5.5.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.475.0",
