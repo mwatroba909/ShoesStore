@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+ mn<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opinie o produktach</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav>
+        <a href="https://localhost:5173/" class="mainButton" style="float: left; margin-right: auto;">Strona Głowna</a>
+        <a href="oceny.html">Oceny</a>
+        <a href="opinie.html">Opinie</a>
+        <a href="forum.html">Forum</a>
+    </nav>
+
+    <div class="container">
+        <h1>Opinie Naszych Butów</h1>
+
+        <!-- Sekcje produktów z unikalnymi ID -->
+        <div class="shoe-comments" id="new-balance-550">
+            <div class="shoe-header">
+                <img src="photos/drilldown1.jpg" alt="Trampki" class="comment-thumbnail">
+                <h2>New Balance 550</h2>
+            </div>
+            <div class="comments-section">
+                <form class="comment-form">
+                    <input type="text" placeholder="Twoje imię" required class="comment-input">
+                    <textarea placeholder="Twój komentarz..." required class="comment-input"></textarea>
+                    <button type="submit" class="submit-btn">Dodaj opinię</button>
+                </form>
+                <div class="comments-list"></div>
+            </div>
+        </div>
+
+        <div class="shoe-comments" id="nike-air-force-1-07-lx">
+            <div class="shoe-header">
+                <img src="photos/drilldown2.jpg" alt="Trampki" class="comment-thumbnail">
+                <h2>Nike Air Force 1 '07 LX</h2>
+            </div>
+            <div class="comments-section">
+                <form class="comment-form">
+                    <input type="text" placeholder="Twoje imię" required class="comment-input">
+                    <textarea placeholder="Twój komentarz..." required class="comment-input"></textarea>
+                    <button type="submit" class="submit-btn">Dodaj opinię</button>
+                </form>
+                <div class="comments-list"></div>
+            </div>
+        </div>
+        
+        <div class="shoe-comments" id="biale-trampki-niskie">
+            <div class="shoe-header">
+                <img src="photos/drilldown3.jpg" alt="Trampki" class="comment-thumbnail">
+                <h2>Białe trampki Niskie</h2>
+            </div>
+            <div class="comments-section">
+                <form class="comment-form">
+                    <input type="text" placeholder="Twoje imię" required class="comment-input">
+                    <textarea placeholder="Twój komentarz..." required class="comment-input"></textarea>
+                    <button type="submit" class="submit-btn">Dodaj opinię</button>
+                </form>
+                <div class="comments-list"></div>
+            </div>
+        </div>
+        
+        <div class="shoe-comments" id="rozowe-trampki">
+            <div class="shoe-header">
+                <img src="photos/drilldown4.jpg" alt="Trampki" class="comment-thumbnail">
+                <h2>Rozowe Trampki</h2>
+            </div>
+            <div class="comments-section">
+                <form class="comment-form">
+                    <input type="text" placeholder="Twoje imię" required class="comment-input">
+                    <textarea placeholder="Twój komentarz..." required class="comment-input"></textarea>
+                    <button type="submit" class="submit-btn">Dodaj opinię</button>
+                </form>
+                <div class="comments-list"></div>
+            </div>
+        </div>
+
+        <div class="shoe-comments" id="klapki-calm">
+            <div class="shoe-header">
+                <img src="photos/drilldown5.jpg" alt="Trampki" class="comment-thumbnail">
+                <h2>Klapki calm</h2>
+            </div>
+            <div class="comments-section">
+                <form class="comment-form">
+                    <input type="text" placeholder="Twoje imię" required class="comment-input">
+                    <textarea placeholder="Twój komentarz..." required class="comment-input"></textarea>
+                    <button type="submit" class="submit-btn">Dodaj opinię</button>
+                </form>
+                <div class="comments-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ws = new WebSocket('ws://localhost:8080');
+
+        // Funkcja tworząca element komentarza
+        function createCommentElement(comment) {
+            const commentDiv = document.createElement('div');
+            commentDiv.className = 'comment';
+            commentDiv.innerHTML = `
+                <div class="comment-header">
+                    <span class="user-name">${comment.user}</span>
+                    <span class="comment-date">${comment.date}</span>
+                </div>
+                <p class="comment-text">${comment.text}</p>
+            `;
+            return commentDiv;
+        }
+
+        // Obsługa wiadomości z WebSocket
+        ws.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            
+            if (data.type === 'COMMENTS_INIT') {
+                // Inicjalizacja wszystkich komentarzy
+                data.comments.forEach(comment => {
+                    const commentsList = document.querySelector(`#${comment.shoe_id} .comments-list`);
+                    if (commentsList) {
+                        commentsList.appendChild(createCommentElement(comment));
+                    }
+                });
+            }
+            else if (data.type === 'NEW_COMMENT') {
+                // Dodanie nowego komentarza
+                const comment = data.comment;
+                const commentsList = document.querySelector(`#${comment.shoe_id} .comments-list`);
+                if (commentsList) {
+                    commentsList.prepend(createCommentElement(comment)); // Najnowsze na górze
+                }
+            }
+        };
+
+        // Obsługa formularzy
+        document.querySelectorAll('.comment-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const shoeId = this.closest('.shoe-comments').id;
+                const user = this.querySelector('input').value;
+                const text = this.querySelector('textarea').value;
+                const date = new Date().toLocaleString();
+
+                if (user && text) {
+                    // Wysłanie komentarza przez WebSocket
+                    ws.send(JSON.stringify({
+                        type: 'COMMENT',
+                        shoeId,
+                        user,
+                        text,
+                        date
+                    }));
+
+                    // Wyczyszczenie formularza
+                    this.reset();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

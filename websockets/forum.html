@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Okienko Chatu</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav>
+    <a href="https://localhost:5173/" class="mainButton" style="float: left; margin-right: auto;">Strona Główna</a>
+    <a href="oceny.html">Oceny</a>
+    <a href="opinie.html">Opinie</a>
+    <a href="forum.html">Forum</a>
+  </nav>
+
+  <div class="container2">
+    <div class="chat-window">
+      <div class="chat-header">
+        <h2>Forum Butowe</h2>
+      </div>
+      <div class="username-input" id="username-container">
+        <input type="text" id="username" placeholder="Wpisz swoją nazwę użytkownika...">
+        <button id="set-username">Zatwierdź</button>
+      </div>
+      <div class="chat-container" id="chat-container" style="display: none;">
+        <div class="chat-messages" id="chat-messages">
+          <p><strong>System:</strong> Witaj w czacie!</p>
+        </div>
+        <div class="chat-input">
+          <input type="text" id="message-input" placeholder="Napisz wiadomość...">
+          <button id="send-button">Wyślij</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let ws;
+    const chatMessages = document.getElementById('chat-messages');
+    const messageInput = document.getElementById('message-input');
+    const sendButton = document.getElementById('send-button');
+    const usernameInput = document.getElementById('username');
+    const setUsernameButton = document.getElementById('set-username');
+    const usernameContainer = document.getElementById('username-container');
+    const chatContainer = document.getElementById('chat-container');
+    let username = localStorage.getItem('username');
+
+    // Jeżeli nazwa jest zapisana, automatycznie włączamy czat
+    if (username) {
+      enableChat();
+    }
+
+    setUsernameButton.addEventListener('click', () => {
+      username = usernameInput.value.trim();
+      if (username) {
+        localStorage.setItem('username', username);
+        enableChat();
+      }
+    });
+
+    function enableChat() {
+      usernameContainer.style.display = 'none';
+      chatContainer.style.display = 'block';
+      // Nawiązanie połączenia WebSocket po ustawieniu nazwy użytkownika
+      ws = new WebSocket('ws://localhost:8080');
+      
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === 'CHAT_INIT') {
+          data.messages.forEach(msg => displayMessage(msg.user, msg.text));
+        } else if (data.type === 'NEW_MESSAGE') {
+          displayMessage(data.user, data.text);
+        }
+      };
+
+      sendButton.addEventListener('click', sendMessage);
+      messageInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+          sendMessage();
+        }
+      });
+    }
+
+    function sendMessage() {
+      const text = messageInput.value.trim();
+      if (text && ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'MESSAGE', user: username, text }));
+        messageInput.value = '';
+      }
+    }
+
+    function displayMessage(user, text) {
+      const messageElement = document.createElement('p');
+      messageElement.innerHTML = `<strong>${user}:</strong> ${text}`;
+      chatMessages.appendChild(messageElement);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+  </script>
+</body>
+</html>

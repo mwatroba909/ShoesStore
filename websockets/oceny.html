@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buty z Polubieniami</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav>
+    <a href="https://localhost:5173/" class="mainButton" style="float: left; margin-right: auto;">Strona Głowna</a>
+    <a href="oceny.html">Oceny</a>
+    <a href="opinie.html">Opinie</a>
+    <a href="forum.html">Forum</a>
+  </nav>
+
+  <div class="container">
+    <h1>Oceny Naszych Butów</h1>
+    <div class="gallery">
+      <!-- Elementy galerii -->
+      <div class="shoe-item">
+        <img src="photos/drilldown1.jpg" alt="Trampki">
+        <button class="like-btn" data-shoe-id="but1">❤️ 0</button>
+      </div>
+      <!-- Kolejne elementy... -->
+      <div class="shoe-item">
+        <img src="photos/drilldown2.jpg" alt="Mokasyny">
+        <button class="like-btn" data-shoe-id="but2">❤️ 0</button>
+      </div>
+      <div class="shoe-item">
+        <img src="photos/drilldown3.jpg" alt="Olsfordy">
+        <button class="like-btn" data-shoe-id="but3">❤️ 0</button>
+      </div>
+      <div class="shoe-item">
+        <img src="photos/drilldown4.jpg" alt="Klapki">
+        <button class="like-btn" data-shoe-id="but4">❤️ 0</button>
+      </div>
+      <div class="shoe-item">
+        <img src="photos/drilldown5.jpg" alt="Sandaby">
+        <button class="like-btn" data-shoe-id="but5">❤️ 0</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Funkcja generująca UUID
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0,
+              v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+  
+    // Pobranie lub utworzenie userId i zapis w localStorage
+    let userId = localStorage.getItem('userId');
+    if (!userId) {
+      userId = generateUUID();
+      localStorage.setItem('userId', userId);
+    }
+  
+    // Dołączenie userId do adresu WebSocket
+    const socket = new WebSocket('ws://localhost:8080?userId=' + userId);
+    let votedShoes = new Set();
+  
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      
+      if (data.type === 'INIT') {
+        // Ustawienie stanu głosowań na starcie
+        Object.entries(data.votes).forEach(([shoeId, { count, users }]) => {
+          const button = document.querySelector(`[data-shoe-id="${shoeId}"]`);
+          if (button) {
+            button.innerHTML = `❤️ ${count}`;
+            if (users.includes(userId)) {
+              button.classList.add("voted"); // Dodanie klasy voted
+              button.disabled = true;
+              votedShoes.add(shoeId);
+            }
+          }
+        });
+      }
+      
+      if (data.type === 'UPDATE') {
+        const button = document.querySelector(`[data-shoe-id="${data.shoeId}"]`);
+        if (button) {
+          button.innerHTML = `❤️ ${data.count}`;
+          if (data.users.includes(userId) && !votedShoes.has(data.shoeId)) {
+            button.classList.add("voted"); // Dodanie klasy voted
+            button.disabled = true;
+            votedShoes.add(data.shoeId);
+          }
+        }
+      }
+    };
+  
+    document.querySelectorAll('.like-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        if (button.classList.contains("voted")) {
+          alert("Już zagłosowałeś na ten produkt!");
+          return;
+        }
+        socket.send(JSON.stringify({
+          type: 'VOTE',
+          shoeId: button.dataset.shoeId
+        }));
+        // Możesz też od razu dodać klasę, żeby użytkownik zobaczył efekt
+        button.classList.add("voted");
+      });
+    });
+  </script>
+  
+</body>
+</html>
