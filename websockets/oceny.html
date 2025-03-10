@@ -17,12 +17,10 @@
   <div class="container">
     <h1>Oceny Naszych Butów</h1>
     <div class="gallery">
-      <!-- Elementy galerii -->
       <div class="shoe-item">
         <img src="photos/drilldown1.jpg" alt="Trampki">
         <button class="like-btn" data-shoe-id="but1">❤️ 0</button>
       </div>
-      <!-- Kolejne elementy... -->
       <div class="shoe-item">
         <img src="photos/drilldown2.jpg" alt="Mokasyny">
         <button class="like-btn" data-shoe-id="but2">❤️ 0</button>
@@ -43,7 +41,6 @@
   </div>
 
   <script>
-    // Funkcja generująca UUID
     function generateUUID() {
       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         const r = Math.random() * 16 | 0,
@@ -52,14 +49,12 @@
       });
     }
   
-    // Pobranie lub utworzenie userId i zapis w localStorage
     let userId = localStorage.getItem('userId');
     if (!userId) {
       userId = generateUUID();
       localStorage.setItem('userId', userId);
     }
   
-    // Dołączenie userId do adresu WebSocket
     const socket = new WebSocket('ws://localhost:8080?userId=' + userId);
     let votedShoes = new Set();
   
@@ -67,13 +62,12 @@
       const data = JSON.parse(event.data);
       
       if (data.type === 'INIT') {
-        // Ustawienie stanu głosowań na starcie
         Object.entries(data.votes).forEach(([shoeId, { count, users }]) => {
           const button = document.querySelector(`[data-shoe-id="${shoeId}"]`);
           if (button) {
             button.innerHTML = `❤️ ${count}`;
             if (users.includes(userId)) {
-              button.classList.add("voted"); // Dodanie klasy voted
+              button.classList.add("voted");
               button.disabled = true;
               votedShoes.add(shoeId);
             }
@@ -86,7 +80,7 @@
         if (button) {
           button.innerHTML = `❤️ ${data.count}`;
           if (data.users.includes(userId) && !votedShoes.has(data.shoeId)) {
-            button.classList.add("voted"); // Dodanie klasy voted
+            button.classList.add("voted");
             button.disabled = true;
             votedShoes.add(data.shoeId);
           }
@@ -104,7 +98,6 @@
           type: 'VOTE',
           shoeId: button.dataset.shoeId
         }));
-        // Możesz też od razu dodać klasę, żeby użytkownik zobaczył efekt
         button.classList.add("voted");
       });
     });

@@ -17,7 +17,7 @@ const Navbar = () => {
                         <Link to='/' className='text-2xl font-bold text-purple-400 items-center space-x-2 flex'>
                             ShoesShop
                         </Link>
-                        <Link to='http://127.0.0.1:5500/NOWEPSW/ShoesStore/websockets/oceny.html' className='bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-md flex items-center transition duration-300 ease-in-out'>
+                        <Link to='http://localhost:5500/websockets/oceny.html' className='bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-md flex items-center transition duration-300 ease-in-out'>
                             <Star className='mr-2' size={18} />
                             Oceny
                         </Link>

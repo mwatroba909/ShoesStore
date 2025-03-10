@@ -17,7 +17,6 @@
     <div class="container">
         <h1>Opinie Naszych Butów</h1>
 
-        <!-- Sekcje produktów z unikalnymi ID -->
         <div class="shoe-comments" id="new-balance-550">
             <div class="shoe-header">
                 <img src="photos/drilldown1.jpg" alt="Trampki" class="comment-thumbnail">
@@ -97,7 +96,6 @@
     <script>
         const ws = new WebSocket('ws://localhost:8080');
 
-        // Funkcja tworząca element komentarza
         function createCommentElement(comment) {
             const commentDiv = document.createElement('div');
             commentDiv.className = 'comment';
@@ -111,12 +109,10 @@
             return commentDiv;
         }
 
-        // Obsługa wiadomości z WebSocket
         ws.onmessage = function(event) {
             const data = JSON.parse(event.data);
             
             if (data.type === 'COMMENTS_INIT') {
-                // Inicjalizacja wszystkich komentarzy
                 data.comments.forEach(comment => {
                     const commentsList = document.querySelector(`#${comment.shoe_id} .comments-list`);
                     if (commentsList) {
@@ -125,16 +121,14 @@
                 });
             }
             else if (data.type === 'NEW_COMMENT') {
-                // Dodanie nowego komentarza
                 const comment = data.comment;
                 const commentsList = document.querySelector(`#${comment.shoe_id} .comments-list`);
                 if (commentsList) {
-                    commentsList.prepend(createCommentElement(comment)); // Najnowsze na górze
+                    commentsList.prepend(createCommentElement(comment));
                 }
             }
         };
 
-        // Obsługa formularzy
         document.querySelectorAll('.comment-form').forEach(form => {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -145,7 +139,6 @@
                 const date = new Date().toLocaleString();
 
                 if (user && text) {
-                    // Wysłanie komentarza przez WebSocket
                     ws.send(JSON.stringify({
                         type: 'COMMENT',
                         shoeId,
@@ -154,7 +147,6 @@
                         date
                     }));
 
-                    // Wyczyszczenie formularza
                     this.reset();
                 }
             });

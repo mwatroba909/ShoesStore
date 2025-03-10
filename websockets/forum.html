@@ -46,7 +46,6 @@
     const chatContainer = document.getElementById('chat-container');
     let username = localStorage.getItem('username');
 
-    // Jeżeli nazwa jest zapisana, automatycznie włączamy czat
     if (username) {
       enableChat();
     }
@@ -62,7 +61,6 @@
     function enableChat() {
       usernameContainer.style.display = 'none';
       chatContainer.style.display = 'block';
-      // Nawiązanie połączenia WebSocket po ustawieniu nazwy użytkownika
       ws = new WebSocket('ws://localhost:8080');
       
       ws.onmessage = (event) => {
